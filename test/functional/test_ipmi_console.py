@@ -113,6 +113,19 @@ class test_ipmi_console_start_stop(unittest.TestCase):
         self.assertEqual(returncode1, 0)
         assert 'ipmi-console start {}'.format(self.node_name) not in output1
 
+    def test_start_ipmi_console_not_start_bmc(self):
+        self.node_name = "default"
+        self.node_workspace = os.path.join(config.infrasim_home, self.node_name)
+        os.system("infrasim node start")
+        os.system("infrasim node stop")
+        os.system("ipmi-console start")
+        ipmi_start_cmd = 'ps ax | grep ipmi-console'
+        returncode, output = run_command(ipmi_start_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        os.system("ipmi-console stop")
+        self.assertEqual(returncode, 0)
+        assert 'ipmi-console start' not in output
+
+
 class test_ipmi_console(unittest.TestCase):
 
     ssh = paramiko.SSHClient()
